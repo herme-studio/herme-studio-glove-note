@@ -14,7 +14,7 @@ import { NotFound } from "./pages/NotFound";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/herme-studio-glove-note">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
