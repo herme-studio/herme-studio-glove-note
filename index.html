@@ -6,6 +6,15 @@
     <title>My Google AI Studio App</title>
   </head>
   <body>
+    <script>
+      // GitHub Pages SPA redirect handler
+      const redirect = sessionStorage.getItem('redirect');
+      if (redirect) {
+        sessionStorage.removeItem('redirect');
+        window.history.replaceState(null, '', redirect);
+
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
