@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=TikTok+Sans:wght@700&family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans JP", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  --color-tiktok-bg: #121212;
+  --color-tiktok-card: #1e1e1e;
+  --color-tiktok-input: #2c2c2c;
+  --color-tiktok-border: #2c2c2c;
+
+  --color-tiktok-pink: #fe2c55;
+  --color-tiktok-cyan: #25f4ee;
+  --color-tiktok-green: #19d066;
+  --color-tiktok-orange: #ff9f0a;
+  --color-tiktok-red: #ff4757;
+
+  --color-tiktok-text-main: #ffffff;
+  --color-tiktok-text-sub: #a0a0a0;
+  --color-tiktok-text-muted: #606060;
+}
+
+body {
+  background-color: var(--color-tiktok-bg);
+  color: var(--color-tiktok-text-main);
+  font-family: var(--font-sans);
+}
+
+/* Custom Utilities */
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--color-tiktok-pink)] text-white font-bold rounded-xl py-3 px-6 shadow-[0_0_20px_rgba(254,44,85,0.3)] transition-all active:scale-95 active:shadow-[0_0_30px_rgba(254,44,85,0.5)];
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-[var(--color-tiktok-cyan)] border border-[var(--color-tiktok-cyan)] rounded-xl py-3 px-6 font-bold transition-all active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply bg-[var(--color-tiktok-input)] text-[var(--color-tiktok-text-sub)] border border-[var(--color-tiktok-border)] rounded-full py-2 px-4 text-xs transition-all;
+  }
+
+  .btn-ghost.active {
+    @apply bg-[rgba(254,44,85,0.15)] text-[var(--color-tiktok-pink)] border-[var(--color-tiktok-pink)];
+  }
+
+  .input-field {
+    @apply w-full bg-[var(--color-tiktok-input)] border border-[var(--color-tiktok-border)] rounded-xl text-white p-4 text-base transition-colors focus:outline-none focus:border-[var(--color-tiktok-cyan)] focus:shadow-[0_0_10px_rgba(37,244,238,0.15)] placeholder:text-[var(--color-tiktok-text-muted)];
+  }
+
+  .card {
+    @apply bg-[var(--color-tiktok-card)] border border-[var(--color-tiktok-border)] rounded-2xl p-4 transition-colors;
+  }
+
+  .badge {
+    @apply inline-block px-2.5 py-1 rounded-full text-xs font-bold;
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
