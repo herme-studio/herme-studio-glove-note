@@ -10,10 +10,11 @@ import { AddGlove } from "./pages/AddGlove";
 import { ListenerList } from "./pages/ListenerList";
 import { ListenerDetail } from "./pages/ListenerDetail";
 import { HowToUse } from "./pages/HowToUse";
+import { NotFound } from "./pages/NotFound";
 
 export default function App() {
   return (
-    <BrowserRouter basename="/herme-studio-glove-note">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="listeners" element={<ListenerList />} />
           <Route path="listeners/:name" element={<ListenerDetail />} />
           <Route path="how-to-use" element={<HowToUse />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
