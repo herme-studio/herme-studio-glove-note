@@ -1,0 +1,5 @@
+{
+  "name": "TikTok LIVE Glove Manager",
+  "description": "Manage TikTok LIVE Glove gifts, expirations, and listener usage rates.",
+  "requestFramePermissions": []
+}
