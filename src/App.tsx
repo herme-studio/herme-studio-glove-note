@@ -13,7 +13,7 @@ import { HowToUse } from "./pages/HowToUse";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/herme-studio-glove-note">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
