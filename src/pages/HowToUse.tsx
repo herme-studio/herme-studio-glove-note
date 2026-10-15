@@ -18,10 +18,10 @@ export function HowToUse() {
           <h2 className="text-lg font-bold mb-3">グローブNoteとは</h2>
           <p className="text-[14px] leading-[1.8] text-[#E0E0E0]">
             グローブNoteは、TikTok LIVEのバトルで<br />
-            リスナーが獲得したグローブを記録・管理するアプリです。<br />
+            リスナーが獲得した「グローブ」や「ソングラッシュ」を記録・管理するアプリです。<br />
             <br />
-            ・誰がグローブを持っているか<br />
-            ・いつ期限が切れるか<br />
+            ・誰がどのアイテムを持っているか<br />
+            ・いつ期限が切れるか（獲得から5日間）<br />
             ・ちゃんと使ってくれたか<br />
             <br />
             をひと目で確認できます。
@@ -36,20 +36,21 @@ export function HowToUse() {
               <div className="font-bold text-white mb-1">① 記録する</div>
               <p className="pl-4">
                 下のタブバー中央の「＋」ボタンから<br />
-                リスナー名とグローブ獲得日時を入力
+                アイテム種別（🥊 グローブ / 🎵 ソングラッシュ）と<br />
+                リスナー名・獲得日時を入力
               </p>
             </div>
             <div>
               <div className="font-bold text-white mb-1">② 確認する</div>
               <p className="pl-4">
-                ダッシュボードで有効なグローブを一覧表示<br />
+                ダッシュボードで有効なアイテムを一覧表示<br />
                 期限が近いものは自動でハイライト表示されます
               </p>
             </div>
             <div>
               <div className="font-bold text-white mb-1">③ 使用済みにする</div>
               <p className="pl-4">
-                グローブをタップして「使用済み」に変更<br />
+                カードを右にスワイプして「使用済み」に変更<br />
                 期限切れのものは自動で「期限切れ」になります
               </p>
             </div>

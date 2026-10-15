@@ -5,6 +5,7 @@ import { useGloves } from "../hooks/useGloves";
 import { ArrowLeft, Trash2, CheckCircle2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "../lib/utils";
+import { ITEM_CONFIGS } from "../types";
 
 export function ListenerDetail() {
   const { name } = useParams<{ name: string }>();
@@ -15,7 +16,7 @@ export function ListenerDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
-    setHeaderActionsContainer(document.getElementById('header-actions'));
+    setHeaderActionsContainer(document.getElementById("header-actions"));
   }, []);
 
   const listenerGloves = gloves
@@ -41,11 +42,28 @@ export function ListenerDetail() {
 
   const stats = listenerGloves.reduce(
     (acc, glove) => {
+      const type = glove.type || "glove";
       acc.total++;
       acc[glove.status]++;
+      if (type === "glove") {
+        acc.totalGloves++;
+        if (glove.status === "active") acc.activeGloves++;
+      } else {
+        acc.totalSongRush++;
+        if (glove.status === "active") acc.activeSongRush++;
+      }
       return acc;
     },
-    { total: 0, active: 0, used: 0, expired: 0 },
+    {
+      total: 0,
+      active: 0,
+      used: 0,
+      expired: 0,
+      totalGloves: 0,
+      totalSongRush: 0,
+      activeGloves: 0,
+      activeSongRush: 0,
+    },
   );
 
   const usageBase = stats.used + stats.expired;
@@ -63,25 +81,58 @@ export function ListenerDetail() {
 
   return (
     <div className="animate-in slide-in-from-right-4 duration-300">
-      {headerActionsContainer && createPortal(
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate("/listeners")}
-            className="p-2 text-[var(--color-tiktok-text-sub)]"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          <button
-            onClick={handleDelete}
-            className="p-2 text-[var(--color-tiktok-red)]"
-          >
-            <Trash2 size={24} />
-          </button>
-        </div>,
-        headerActionsContainer
-      )}
+      {headerActionsContainer &&
+        createPortal(
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate("/listeners")}
+              className="p-2 text-[var(--color-tiktok-text-sub)]"
+            >
+              <ArrowLeft size={24} />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="p-2 text-[var(--color-tiktok-red)]"
+            >
+              <Trash2 size={24} />
+            </button>
+          </div>,
+          headerActionsContainer,
+        )}
 
-      <h1 className="text-3xl font-bold mb-6 mt-4 break-words">{decodedName}</h1>
+      <h1 className="text-3xl font-bold mb-4 mt-4 break-words">{decodedName}</h1>
+
+      {/* Item summary pills */}
+      <div className="flex gap-2 mb-6">
+        <div className="flex-1 card p-3 flex items-center gap-2">
+          <span className="text-2xl">🥊</span>
+          <div>
+            <div className="text-[11px] text-[var(--color-tiktok-text-sub)]">
+              グローブ
+            </div>
+            <div className="font-mono font-bold text-sm">
+              有効 {stats.activeGloves}{" "}
+              <span className="text-xs text-[var(--color-tiktok-text-muted)]">
+                / 累計{stats.totalGloves}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 card p-3 flex items-center gap-2">
+          <span className="text-2xl">🎵</span>
+          <div>
+            <div className="text-[11px] text-[var(--color-tiktok-text-sub)]">
+              ソングラッシュ
+            </div>
+            <div className="font-mono font-bold text-sm">
+              有効 {stats.activeSongRush}{" "}
+              <span className="text-xs text-[var(--color-tiktok-text-muted)]">
+                / 累計{stats.totalSongRush}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4">
@@ -111,7 +162,7 @@ export function ListenerDetail() {
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="card text-center">
           <div className="text-sm text-[var(--color-tiktok-text-sub)] mb-2">
-            累計獲得数
+            累計獲得総数
           </div>
           <div className="text-4xl font-mono font-bold">{stats.total}</div>
         </div>
@@ -138,63 +189,79 @@ export function ListenerDetail() {
 
       <h2 className="text-lg font-bold mb-4">履歴</h2>
       <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[var(--color-tiktok-border)] before:to-transparent">
-        {listenerGloves.map((glove) => (
-          <div
-            key={glove.id}
-            className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
-          >
+        {listenerGloves.map((glove) => {
+          const itemConfig = ITEM_CONFIGS[glove.type || "glove"];
+          return (
             <div
-              className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-full border-4 border-[var(--color-tiktok-bg)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow",
-                glove.status === "active"
-                  ? "bg-[var(--color-tiktok-green)]"
-                  : glove.status === "used"
-                    ? "bg-[var(--color-tiktok-text-muted)]"
-                    : "bg-[var(--color-tiktok-red)]",
-              )}
+              key={glove.id}
+              className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
             >
-              <span className="text-xs">🥊</span>
-            </div>
-
-            <div className="card w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] ml-4 md:ml-0 p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="text-sm font-mono text-[var(--color-tiktok-text-sub)]">
-                  {format(parseISO(glove.acquired_at), "yyyy/MM/dd HH:mm")}
-                </div>
-                <span
-                  className={cn(
-                    "badge",
-                    glove.status === "active"
-                      ? "bg-[var(--color-tiktok-green)]/20 text-[var(--color-tiktok-green)]"
-                      : glove.status === "used"
-                        ? "bg-[var(--color-tiktok-input)] text-[var(--color-tiktok-text-sub)]"
-                        : "bg-[var(--color-tiktok-red)]/20 text-[var(--color-tiktok-red)]",
-                  )}
-                >
-                  {glove.status === "active"
-                    ? "有効"
+              <div
+                className={cn(
+                  "flex items-center justify-center w-10 h-10 rounded-full border-4 border-[var(--color-tiktok-bg)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow text-sm",
+                  glove.status === "active"
+                    ? "bg-[var(--color-tiktok-green)]"
                     : glove.status === "used"
-                      ? "使用済"
-                      : "期限切れ"}
-                </span>
+                      ? "bg-[var(--color-tiktok-text-muted)]"
+                      : "bg-[var(--color-tiktok-red)]",
+                )}
+              >
+                <span>{itemConfig.icon}</span>
               </div>
 
-              {glove.status === "active" && (
-                <button
-                  onClick={() => updateGloveStatus(glove.id, "used")}
-                  className="mt-3 w-full py-2 rounded-lg bg-[var(--color-tiktok-input)] text-white text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                >
-                  <CheckCircle2
-                    size={16}
-                    className="text-[var(--color-tiktok-green)]"
-                  />
-                  使用済みにする
-                </button>
-              )}
+              <div className="card w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] ml-4 md:ml-0 p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <span
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold mb-1"
+                      style={{
+                        backgroundColor: itemConfig.badgeBg,
+                        color: itemConfig.badgeText,
+                      }}
+                    >
+                      <span>{itemConfig.icon}</span>
+                      <span>{itemConfig.name}</span>
+                    </span>
+                    <div className="text-xs font-mono text-[var(--color-tiktok-text-sub)]">
+                      {format(parseISO(glove.acquired_at), "yyyy/MM/dd HH:mm")}
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      "badge",
+                      glove.status === "active"
+                        ? "bg-[var(--color-tiktok-green)]/20 text-[var(--color-tiktok-green)]"
+                        : glove.status === "used"
+                          ? "bg-[var(--color-tiktok-input)] text-[var(--color-tiktok-text-sub)]"
+                          : "bg-[var(--color-tiktok-red)]/20 text-[var(--color-tiktok-red)]",
+                    )}
+                  >
+                    {glove.status === "active"
+                      ? "有効"
+                      : glove.status === "used"
+                        ? "使用済"
+                        : "期限切れ"}
+                  </span>
+                </div>
+
+                {glove.status === "active" && (
+                  <button
+                    onClick={() => updateGloveStatus(glove.id, "used")}
+                    className="mt-3 w-full py-2 rounded-lg bg-[var(--color-tiktok-input)] text-white text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                  >
+                    <CheckCircle2
+                      size={16}
+                      className="text-[var(--color-tiktok-green)]"
+                    />
+                    使用済みにする
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
+

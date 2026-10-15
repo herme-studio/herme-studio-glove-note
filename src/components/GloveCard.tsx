@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, useAnimation, PanInfo } from "motion/react";
-import { Glove } from "../types";
+import { Glove, ITEM_CONFIGS } from "../types";
 import {
   formatDistanceToNowStrict,
   parseISO,
@@ -20,6 +20,8 @@ interface GloveCardProps {
 export function GloveCard({ glove, onUse }: GloveCardProps) {
   const controls = useAnimation();
   const [isSwiped, setIsSwiped] = useState(false);
+
+  const itemConfig = ITEM_CONFIGS[glove.type || "glove"];
 
   const handleDragEnd = async (
     event: MouseEvent | TouchEvent | PointerEvent,
@@ -101,8 +103,22 @@ export function GloveCard({ glove, onUse }: GloveCardProps) {
         animate={controls}
         className="card relative z-10 flex justify-between items-center"
       >
-        <div>
-          <h3 className="font-bold text-lg mb-1">{glove.listener_name}</h3>
+        <div className="pr-2">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold"
+              style={{
+                backgroundColor: itemConfig.badgeBg,
+                color: itemConfig.badgeText,
+              }}
+            >
+              <span>{itemConfig.icon}</span>
+              <span>{itemConfig.name}</span>
+            </span>
+            <h3 className="font-bold text-lg leading-tight truncate">
+              {glove.listener_name}
+            </h3>
+          </div>
           <div className="text-xs text-[var(--color-tiktok-text-sub)] mb-2">
             獲得:{" "}
             {parseISO(glove.acquired_at).toLocaleDateString("ja-JP", {
@@ -115,10 +131,11 @@ export function GloveCard({ glove, onUse }: GloveCardProps) {
           {getStatusDisplay()}
         </div>
 
-        <div className="w-12 h-12 rounded-full bg-[var(--color-tiktok-input)] flex items-center justify-center text-2xl">
-          🥊
+        <div className="w-12 h-12 shrink-0 rounded-full bg-[var(--color-tiktok-input)] flex items-center justify-center text-2xl border border-[var(--color-tiktok-border)]">
+          {itemConfig.icon}
         </div>
       </motion.div>
     </div>
   );
 }
+

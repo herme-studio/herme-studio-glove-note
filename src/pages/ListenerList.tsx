@@ -1,6 +1,5 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPortal } from "react-dom";
 import { useGloves } from "../hooks/useGloves";
 import { ChevronRight, AlertCircle, Users } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -8,29 +7,48 @@ import { cn } from "../lib/utils";
 export function ListenerList() {
   const { gloves } = useGloves();
   const navigate = useNavigate();
-  const [headerActionsContainer, setHeaderActionsContainer] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setHeaderActionsContainer(document.getElementById('header-actions'));
-  }, []);
 
   const listenerStats = useMemo(() => {
     const stats: Record<
       string,
-      { total: number; active: number; used: number; expired: number }
+      {
+        total: number;
+        active: number;
+        activeGloves: number;
+        activeSongRush: number;
+        totalGloves: number;
+        totalSongRush: number;
+        used: number;
+        expired: number;
+      }
     > = {};
 
     gloves.forEach((glove) => {
+      const itemType = glove.type || "glove";
       if (!stats[glove.listener_name]) {
         stats[glove.listener_name] = {
           total: 0,
           active: 0,
+          activeGloves: 0,
+          activeSongRush: 0,
+          totalGloves: 0,
+          totalSongRush: 0,
           used: 0,
           expired: 0,
         };
       }
       stats[glove.listener_name].total += 1;
-      stats[glove.listener_name][glove.status] += 1;
+      if (itemType === "glove") {
+        stats[glove.listener_name].totalGloves += 1;
+        if (glove.status === "active") stats[glove.listener_name].activeGloves += 1;
+      } else {
+        stats[glove.listener_name].totalSongRush += 1;
+        if (glove.status === "active") stats[glove.listener_name].activeSongRush += 1;
+      }
+
+      if (glove.status === "active") stats[glove.listener_name].active += 1;
+      if (glove.status === "used") stats[glove.listener_name].used += 1;
+      if (glove.status === "expired") stats[glove.listener_name].expired += 1;
     });
 
     return Object.entries(stats)
@@ -51,13 +69,11 @@ export function ListenerList() {
 
   return (
     <div className="animate-in fade-in duration-300">
-      <header className="mb-6 mt-4 flex justify-between items-end">
-        <div>
-          <h1 className="text-2xl font-bold">リスナー一覧</h1>
-          <p className="text-[var(--color-tiktok-text-sub)] text-sm mt-1">
-            獲得数と使用率の統計
-          </p>
-        </div>
+      <header className="mb-6 mt-4">
+        <h1 className="text-2xl font-bold">リスナー一覧</h1>
+        <p className="text-[var(--color-tiktok-text-sub)] text-sm mt-1">
+          所持アイテム数と使用率の統計
+        </p>
       </header>
 
       <div className="space-y-3">
@@ -71,17 +87,40 @@ export function ListenerList() {
               className="card cursor-pointer hover:bg-[var(--color-tiktok-input)] transition-colors"
             >
               <div className="flex justify-between items-center mb-3">
-                <h3 className="font-bold text-lg truncate pr-4">{stat.name}</h3>
+                <div className="flex items-center gap-2 truncate pr-2">
+                  <h3 className="font-bold text-lg truncate">{stat.name}</h3>
+                  <span className="text-xs text-[var(--color-tiktok-text-muted)] font-mono">
+                    計{stat.total}個
+                  </span>
+                </div>
                 <ChevronRight
                   size={20}
                   className="text-[var(--color-tiktok-text-sub)] shrink-0"
                 />
               </div>
 
+              {/* Multi-item breakdown tags */}
+              <div className="flex items-center gap-2 mb-3 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[rgba(254,44,85,0.12)] text-[var(--color-tiktok-pink)] font-mono">
+                  <span>🥊</span>
+                  <span>有効 {stat.activeGloves}</span>
+                  <span className="text-[10px] text-[var(--color-tiktok-text-muted)]">
+                    / 累計{stat.totalGloves}
+                  </span>
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[rgba(37,244,238,0.12)] text-[var(--color-tiktok-cyan)] font-mono">
+                  <span>🎵</span>
+                  <span>有効 {stat.activeSongRush}</span>
+                  <span className="text-[10px] text-[var(--color-tiktok-text-muted)]">
+                    / 累計{stat.totalSongRush}
+                  </span>
+                </span>
+              </div>
+
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-[var(--color-tiktok-bg)] rounded-lg p-2">
                   <div className="text-[10px] text-[var(--color-tiktok-text-sub)] mb-1">
-                    有効
+                    有効総数
                   </div>
                   <div className="font-mono font-bold text-[var(--color-tiktok-green)]">
                     {stat.active}
@@ -133,5 +172,6 @@ export function ListenerList() {
     </div>
   );
 }
+
 
 
