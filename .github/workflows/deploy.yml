@@ -22,7 +22,7 @@ jobs:
           check-latest: true
       - run: npm ci
       - run: npm run build
-      - uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       # upload-pages-artifact は内部で upload-artifact をタグ参照するため、同じ処理を SHA 固定で展開
       - run: tar --dereference --hard-dereference --directory dist -cvf "$RUNNER_TEMP/artifact.tar" --exclude=.git --exclude=.github .
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
